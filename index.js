@@ -20,9 +20,6 @@ async function connection() {
     await mongoClient.connect();
     await redisClient.connect();
 
-    // const redisDb = mongoClient.db('redis');
-    // const dataCollection = redisDb.collection('data');
-
     const mongoDb = mongoClient.db('redis');
     const usersCollection = mongoDb.collection('users');
 
@@ -78,5 +75,5 @@ async function cashSetAndGet(key, callback) {
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
-
+// server listening
 app.listen(3000, () => console.log('Server listening on port 3000'));
