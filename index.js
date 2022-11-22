@@ -32,7 +32,7 @@ async function connection() {
 
     // get all users
     app.get('/users', async (req, res) => {
-      const users = await cashSetAndGet('users', async () => {
+      const users = await cacheSetAndGet('users', async () => {
         const result = await usersCollection.find({}).toArray();
         return result;
       });
@@ -42,7 +42,7 @@ async function connection() {
     // get a single user
     app.get('/users/:id', async (req, res) => {
       const id = req.params.id;
-      const user = await cashSetAndGet(`user:${id}`, async () => {
+      const user = await cacheSetAndGet(`user:${id}`, async () => {
         const user = await usersCollection.findOne({
           _id: ObjectId(id),
         });
@@ -60,11 +60,13 @@ async function connection() {
 connection().catch(console.dir);
 
 // cash data set and get function
-async function cashSetAndGet(key, callback) {
+async function cacheSetAndGet(key, callback) {
   const data = await redisClient.get(key);
   if (data) {
+    console.log('cash found');
     return JSON.parse(data);
   } else {
+    console.log('cash not found');
     const data = await callback();
     redisClient.setEx(key, 3600, JSON.stringify(data));
     return data;
